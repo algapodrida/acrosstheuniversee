@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe Simulator</title>
+    <title>Universe Simulator v5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700&family=Share+Tech+Mono&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,50 +59,119 @@
         /* ── Toolbar ── */
         #toolbar {
             position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 5px; padding: 9px 12px;
-            background: rgba(5,5,20,0.90);
+            display: flex; gap: 4px; padding: 8px 10px;
+            background: rgba(5,5,20,0.92);
             border: 1px solid rgba(100,150,255,0.15); border-radius: 18px;
             backdrop-filter: blur(24px); z-index: 50;
             box-shadow: 0 0 40px rgba(0,0,30,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
-            flex-wrap: nowrap;
+            flex-wrap: nowrap; max-width: 98vw; overflow-x: auto;
         }
         .tool-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            padding: 8px 11px; border-radius: 10px; border: 1px solid transparent;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            padding: 7px 9px; border-radius: 10px; border: 1px solid transparent;
             background: transparent; color: rgba(180,200,255,0.4);
-            cursor: none; transition: all 0.2s; min-width: 58px; user-select: none;
+            cursor: none; transition: all 0.2s; min-width: 52px; user-select: none; flex-shrink: 0;
         }
-        .tool-btn .icon { font-size: 1.25rem; line-height: 1; filter: grayscale(1) opacity(0.45); transition: all 0.2s; }
-        .tool-btn .label { font-family: 'Share Tech Mono', monospace; font-size: 0.48rem; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+        .tool-btn .icon { font-size: 1.2rem; line-height: 1; filter: grayscale(1) opacity(0.45); transition: all 0.2s; }
+        .tool-btn .label { font-family: 'Share Tech Mono', monospace; font-size: 0.44rem; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
         .tool-btn:hover { background: rgba(100,150,255,0.08); color: rgba(200,220,255,0.7); border-color: rgba(100,150,255,0.2); }
         .tool-btn:hover .icon { filter: grayscale(0) opacity(0.8); }
         .tool-btn.active { background: rgba(100,150,255,0.13); border-color: rgba(120,170,255,0.4); color: rgba(200,230,255,0.9); box-shadow: 0 0 14px rgba(100,150,255,0.15), inset 0 0 8px rgba(100,150,255,0.06); }
         .tool-btn.active .icon { filter: grayscale(0) opacity(1); }
         .toolbar-divider { width: 1px; background: rgba(100,150,255,0.1); margin: 4px 1px; border-radius: 1px; flex-shrink: 0; }
 
-        #stats {
-            position: fixed; top: 20px; right: 20px;
-            font-size: 0.6rem; letter-spacing: 0.15em;
-            color: rgba(150,180,255,0.25); text-align: right;
-            pointer-events: none; line-height: 1.9;
+        /* ── Control panel top-right ── */
+        #controls {
+            position: fixed; top: 16px; right: 16px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 50;
         }
+        .ctrl-row {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(5,5,20,0.88);
+            border: 1px solid rgba(100,150,255,0.13);
+            border-radius: 10px; padding: 6px 10px;
+            backdrop-filter: blur(20px);
+        }
+        .ctrl-label {
+            font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: rgba(150,180,255,0.4); white-space: nowrap;
+        }
+        .ctrl-btn {
+            background: rgba(100,150,255,0.1); border: 1px solid rgba(100,150,255,0.2);
+            color: rgba(180,210,255,0.8); border-radius: 6px;
+            padding: 4px 10px; cursor: none; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.55rem; letter-spacing: 0.1em; transition: all 0.2s; white-space: nowrap;
+        }
+        .ctrl-btn:hover { background: rgba(100,150,255,0.2); color: #fff; border-color: rgba(120,170,255,0.5); }
+        .ctrl-btn.active { background: rgba(255,100,100,0.15); border-color: rgba(255,100,100,0.4); color: rgba(255,160,160,0.9); }
+        #sizeSlider {
+            -webkit-appearance: none; appearance: none;
+            width: 90px; height: 3px; background: rgba(100,150,255,0.15);
+            border-radius: 2px; outline: none; cursor: none;
+        }
+        #sizeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 12px; height: 12px;
+            border-radius: 50%; background: rgba(150,200,255,0.8);
+            border: 1px solid rgba(150,200,255,0.5); cursor: none;
+        }
+        #sizeVal {
+            font-size: 0.5rem; color: rgba(150,180,255,0.5); min-width: 24px; text-align: right;
+        }
+
+        #stats {
+            position: fixed; top: 16px; left: 16px;
+            font-size: 0.55rem; letter-spacing: 0.13em;
+            color: rgba(150,180,255,0.22); text-align: left;
+            pointer-events: none; line-height: 2.0;
+        }
+
+        /* Pause overlay flash */
+        #pauseFlash {
+            position: fixed; inset: 0; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 200; opacity: 0; transition: opacity 0.3s;
+        }
+        #pauseFlash .text {
+            font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem,4vw,3.5rem);
+            letter-spacing: 0.4em; color: rgba(150,200,255,0.6);
+            text-shadow: 0 0 40px rgba(100,160,255,0.5);
+        }
+        #pauseFlash.show { opacity: 1; }
     </style>
 </head>
 <body>
 
 <div id="overlay">
     <div class="title">UNIVERSE</div>
-    <div class="subtitle">Particle Simulator · v4.0</div>
+    <div class="subtitle">Particle Simulator · v5.0</div>
     <button class="start-btn" id="startBtn">INICIAR SIMULACIÓN</button>
 </div>
 
 <div id="stats">
     <div id="particleCount">PARTÍCULAS: 0</div>
     <div id="toolLabel">HERRAMIENTA: —</div>
+    <div id="fpsLabel">FPS: —</div>
+</div>
+
+<!-- Control panel: pause + cursor size -->
+<div id="controls">
+    <div class="ctrl-row">
+        <span class="ctrl-label">Simulación</span>
+        <button class="ctrl-btn" id="pauseBtn">⏸ PAUSA</button>
+        <button class="ctrl-btn" id="clearBtn">🗑 LIMPIAR</button>
+    </div>
+    <div class="ctrl-row">
+        <span class="ctrl-label">Cursor</span>
+        <input type="range" id="sizeSlider" min="0.5" max="3" step="0.1" value="1">
+        <span id="sizeVal">1.0×</span>
+    </div>
 </div>
 
 <canvas id="canvas"></canvas>
 <div id="cursor"></div>
+
+<div id="pauseFlash"><div class="text" id="pauseText">PAUSADO</div></div>
 
 <div id="toolbar">
     <!-- Group 1: interaction -->
@@ -116,9 +185,18 @@
         <span class="icon">🫳</span><span class="label">Arrastrar</span>
     </button>
     <div class="toolbar-divider"></div>
-    <!-- Group 2: field effects -->
+    <!-- Group 2: fields -->
     <button class="tool-btn" data-tool="vortex">
         <span class="icon">🌀</span><span class="label">Vórtex</span>
+    </button>
+    <button class="tool-btn" data-tool="repulsor">
+        <span class="icon">💫</span><span class="label">Repulsor</span>
+    </button>
+    <button class="tool-btn" data-tool="freeze">
+        <span class="icon">❄️</span><span class="label">Frío</span>
+    </button>
+    <button class="tool-btn" data-tool="heat">
+        <span class="icon">🔥</span><span class="label">Calor</span>
     </button>
     <div class="toolbar-divider"></div>
     <!-- Group 3: create/destroy -->
@@ -129,15 +207,29 @@
         <span class="icon">🧹</span><span class="label">Goma</span>
     </button>
     <div class="toolbar-divider"></div>
-    <!-- Group 4: place objects -->
+    <!-- Group 4: objects -->
     <button class="tool-btn" data-tool="blackhole">
         <span class="icon">⚫</span><span class="label">Ag. Negro</span>
     </button>
     <button class="tool-btn" data-tool="bomb">
         <span class="icon">💣</span><span class="label">Bomba</span>
     </button>
+    <button class="tool-btn" data-tool="gravity">
+        <span class="icon">🪐</span><span class="label">Planeta</span>
+    </button>
+    <button class="tool-btn" data-tool="pulsar">
+        <span class="icon">⭐</span><span class="label">Púlsar</span>
+    </button>
     <div class="toolbar-divider"></div>
-    <!-- Group 5: lock/unlock -->
+    <!-- Group 5: paint -->
+    <button class="tool-btn" data-tool="paint">
+        <span class="icon">🎨</span><span class="label">Pintar</span>
+    </button>
+    <button class="tool-btn" data-tool="rainbow">
+        <span class="icon">🌈</span><span class="label">Arcoíris</span>
+    </button>
+    <div class="toolbar-divider"></div>
+    <!-- Group 6: lock -->
     <button class="tool-btn" data-tool="lock">
         <span class="icon">🔒</span><span class="label">Candado</span>
     </button>
@@ -154,25 +246,45 @@ const startBtn = document.getElementById('startBtn');
 const cursorEl = document.getElementById('cursor');
 const particleCountEl = document.getElementById('particleCount');
 const toolLabelEl     = document.getElementById('toolLabel');
+const fpsLabelEl      = document.getElementById('fpsLabel');
+const pauseBtn        = document.getElementById('pauseBtn');
+const clearBtn        = document.getElementById('clearBtn');
+const sizeSlider      = document.getElementById('sizeSlider');
+const sizeVal         = document.getElementById('sizeVal');
+const pauseFlash      = document.getElementById('pauseFlash');
+const pauseText       = document.getElementById('pauseText');
 
 let W, H, audioCtx;
 let activeTool  = 'hand';
 let blackHoles  = [];
 let bombs       = [];
+let gravityWells = [];
+let pulsars     = [];
 let isMouseDown = false;
 let sourceTimer = null;
-const MAX_PARTICLES = 700;
+let isPaused    = false;
+let cursorScale = 1.0;
+const MAX_PARTICLES = 800;
 
-// Drag state — track last mouse position to compute delta
 let prevMX = -9999, prevMY = -9999;
+let lastMX = -9999, lastMY = -9999;
+
+// FPS tracking
+let fpsFrames = 0, fpsClock = Date.now(), lastFPS = 60;
+
+// Paint colors cycle
+const PAINT_COLORS = ['#ff6b6b','#ffd93d','#6bcb77','#4ecdc4','#a855f7','#fb923c','#38bdf8','#f472b6'];
+let paintColorIdx = 0;
+
+// Rainbow hue
+let rainbowHue = 0;
 
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
 resize();
 
-// ── AUDIO ────────────────────────────────────────────────────────────
+// ── AUDIO ─────────────────────────────────────────────────────
 function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-
 function playTone(freq, vol=0.015, dur=1.2, type='sine') {
     if (!audioCtx) return;
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -181,35 +293,34 @@ function playTone(freq, vol=0.015, dur=1.2, type='sine') {
     g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
     o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
 }
-
 function playExplosion() {
     if (!audioCtx) return;
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-    o.type='sawtooth';
-    o.frequency.setValueAtTime(90, audioCtx.currentTime);
+    o.type='sawtooth'; o.frequency.setValueAtTime(90, audioCtx.currentTime);
     o.frequency.exponentialRampToValueAtTime(18, audioCtx.currentTime+0.4);
     g.gain.setValueAtTime(0.2, audioCtx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.5);
     o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5);
     const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.3,audioCtx.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
     const s=audioCtx.createBufferSource(), g2=audioCtx.createGain();
     s.buffer=buf; g2.gain.setValueAtTime(0.14,audioCtx.currentTime);
     g2.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.3);
     s.connect(g2); g2.connect(audioCtx.destination); s.start(); s.stop(audioCtx.currentTime+0.3);
 }
+function playLock()   { playTone(300,0.05,0.25,'square'); playTone(200,0.04,0.35,'square'); }
+function playUnlock() { playTone(400,0.04,0.15,'sine');   playTone(600,0.03,0.2,'sine'); }
+function playPulsar() { playTone(80,0.03,0.5,'sine'); }
+function playFreeze() { playTone(1200,0.025,0.3,'sine'); }
+function playHeat()   { playTone(220,0.025,0.2,'sawtooth'); }
 
-function playLock()   { playTone(300, 0.05, 0.25, 'square'); playTone(200, 0.04, 0.35, 'square'); }
-function playUnlock() { playTone(400, 0.04, 0.15, 'sine');   playTone(600, 0.03, 0.2,  'sine'); }
-
-// ── PARTICLES ────────────────────────────────────────────────────────
+// ── PARTICLES ──────────────────────────────────────────────────
 const STAR_COLORS = ['#ffffff','#e8f0ff','#ffd6a5','#ffadad','#caffbf','#9bf6ff','#a0c4ff','#bdb2ff','#ffc6ff'];
 
 class Particle {
     constructor(x, y, burst=false) {
-        this.x = (x !== undefined) ? x : Math.random()*W;
-        this.y = (y !== undefined) ? y : Math.random()*H;
+        this.x = (x!==undefined) ? x : Math.random()*W;
+        this.y = (y!==undefined) ? y : Math.random()*H;
         if (burst) {
             const a=Math.random()*Math.PI*2, s=Math.random()*3+0.5;
             this.vx=Math.cos(a)*s; this.vy=Math.sin(a)*s;
@@ -223,90 +334,156 @@ class Particle {
         this.twinkle      = Math.random()*Math.PI*2;
         this.twinkleSpeed = 0.02+Math.random()*0.03;
         this.dead         = false;
-        this.locked       = false;   // candado
-        this.lockFlash    = 0;       // visual flash on lock/unlock
+        this.locked       = false;
+        this.lockFlash    = 0;
+        this.frozen       = false;
+        this.frozenTimer  = 0;
+        this.heat         = 0; // 0..1
     }
 
     update(mouse, dmx, dmy) {
-        // Locked particles can't move for ANY reason
         if (this.locked) {
-            this.vx = 0; this.vy = 0;
-            this.twinkle += this.twinkleSpeed;
-            this.alpha = this.baseAlpha + Math.sin(this.twinkle)*0.1;
-            if (this.lockFlash > 0) this.lockFlash--;
-
-            // Lock tool paints locks, key tool removes them
-            if (activeTool==='lock' && isMouseDown) {
-                const dx=mouse.x-this.x, dy=mouse.y-this.y;
-                if (dx*dx+dy*dy < 60*60) { /* already locked */ }
-            }
+            this.vx=0; this.vy=0;
+            this.twinkle+=this.twinkleSpeed;
+            this.alpha=this.baseAlpha+Math.sin(this.twinkle)*0.1;
+            if (this.lockFlash>0) this.lockFlash--;
             if (activeTool==='key' && isMouseDown) {
                 const dx=mouse.x-this.x, dy=mouse.y-this.y;
-                if (dx*dx+dy*dy < 60*60) { this.locked=false; this.lockFlash=20; }
+                const r = 60*cursorScale;
+                if (dx*dx+dy*dy < r*r) { this.locked=false; this.lockFlash=20; }
             }
             return;
         }
 
-        this.twinkle += this.twinkleSpeed;
-        this.alpha = this.baseAlpha + Math.sin(this.twinkle)*0.15;
+        // Freeze logic
+        if (this.frozen) {
+            this.frozenTimer--;
+            this.vx *= 0.85; this.vy *= 0.85;
+            if (this.frozenTimer <= 0) this.frozen = false;
+            this.twinkle+=this.twinkleSpeed;
+            this.alpha=this.baseAlpha+Math.sin(this.twinkle)*0.1;
+            // still handle black holes even frozen
+            blackHoles.forEach(bh => {
+                const dx=bh.x-this.x, dy=bh.y-this.y;
+                const dist=Math.sqrt(dx*dx+dy*dy);
+                if (dist<12) this.dead=true;
+            });
+            this.x+=this.vx; this.y+=this.vy;
+            if (this.x<this.radius){this.x=this.radius; this.vx*=-0.7;}
+            if (this.x>W-this.radius){this.x=W-this.radius; this.vx*=-0.7;}
+            if (this.y<this.radius){this.y=this.radius; this.vy*=-0.7;}
+            if (this.y>H-this.radius){this.y=H-this.radius; this.vy*=-0.7;}
+            return;
+        }
 
-        // Hand / Fist
-        if (activeTool==='hand' || activeTool==='fist') {
+        this.twinkle+=this.twinkleSpeed;
+        this.alpha=this.baseAlpha+Math.sin(this.twinkle)*0.15;
+
+        const toolRange = 180*cursorScale;
+
+        // Hand
+        if (activeTool==='hand') {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
             const dist=Math.sqrt(dx*dx+dy*dy);
-            if (dist<180 && dist>0) {
-                const f=(180-dist)/2400, dir=activeTool==='hand'?1:-1;
-                this.vx+=dx*f*dir; this.vy+=dy*f*dir;
+            if (dist<toolRange && dist>0) {
+                const f=(toolRange-dist)/2400;
+                this.vx+=dx*f; this.vy+=dy*f;
                 if (Math.random()>0.985) playTone(120+dist*1.5,0.01,1.0);
             }
         }
-
-        // Drag — carries nearby particles with cursor movement
+        // Fist
+        if (activeTool==='fist') {
+            const dx=mouse.x-this.x, dy=mouse.y-this.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            if (dist<toolRange && dist>0) {
+                const f=(toolRange-dist)/2400;
+                this.vx-=dx*f; this.vy-=dy*f;
+            }
+        }
+        // Drag
         if (activeTool==='drag' && isMouseDown) {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
             const dist=Math.sqrt(dx*dx+dy*dy);
-            const range=160;
-            if (dist < range) {
-                const strength = Math.pow((range-dist)/range, 1.5);
-                this.vx += dmx * strength * 0.55;
-                this.vy += dmy * strength * 0.55;
+            const range=160*cursorScale;
+            if (dist<range) {
+                const strength=Math.pow((range-dist)/range,1.5);
+                this.vx+=dmx*strength*0.55; this.vy+=dmy*strength*0.55;
             }
         }
-
-        // Vortex — gentle pull + tangential spin
+        // Vortex
         if (activeTool==='vortex') {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
             const dist=Math.sqrt(dx*dx+dy*dy);
-            const range=220;
-            if (dist < range && dist > 2) {
-                const norm  = (range-dist)/range;
-                // radial pull (inward)
-                const pull  = norm * norm * 0.35;
-                this.vx += (dx/dist) * pull;
-                this.vy += (dy/dist) * pull;
-                // tangential force (counter-clockwise spin)
-                const spin  = norm * 0.6;
-                this.vx += (-dy/dist) * spin;
-                this.vy +=  (dx/dist) * spin;
+            const range=220*cursorScale;
+            if (dist<range && dist>2) {
+                const norm=(range-dist)/range;
+                this.vx+=(dx/dist)*norm*norm*0.35 + (-dy/dist)*norm*0.6;
+                this.vy+=(dy/dist)*norm*norm*0.35 + ( dx/dist)*norm*0.6;
             }
         }
-
+        // Repulsor — strong radial push
+        if (activeTool==='repulsor') {
+            const dx=this.x-mouse.x, dy=this.y-mouse.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            const range=200*cursorScale;
+            if (dist<range && dist>2) {
+                const f=Math.pow((range-dist)/range,1.8)*1.4;
+                this.vx+=(dx/dist)*f; this.vy+=(dy/dist)*f;
+            }
+        }
+        // Freeze — slow particles in range
+        if (activeTool==='freeze' && isMouseDown) {
+            const dx=mouse.x-this.x, dy=mouse.y-this.y;
+            const range=100*cursorScale;
+            if (dx*dx+dy*dy<range*range) {
+                this.frozen=true; this.frozenTimer=200;
+                this.vx*=0.5; this.vy*=0.5;
+            }
+        }
+        // Heat — accelerate particles
+        if (activeTool==='heat' && isMouseDown) {
+            const dx=mouse.x-this.x, dy=mouse.y-this.y;
+            const range=120*cursorScale;
+            const d2=dx*dx+dy*dy;
+            if (d2<range*range) {
+                const rand=Math.random()*Math.PI*2;
+                const f=0.8*(1-Math.sqrt(d2)/(range));
+                this.vx+=Math.cos(rand)*f*2.5; this.vy+=Math.sin(rand)*f*2.5;
+                this.heat=Math.min(1,(this.heat||0)+0.1);
+            }
+        }
+        if (this.heat>0) this.heat=Math.max(0,this.heat-0.005);
         // Eraser
         if (activeTool==='eraser' && isMouseDown) {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
-            if (dx*dx+dy*dy < 50*50) this.dead=true;
+            const r=50*cursorScale;
+            if (dx*dx+dy*dy<r*r) this.dead=true;
         }
-
-        // Lock tool: paint lock
+        // Lock
         if (activeTool==='lock' && isMouseDown) {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
-            if (dx*dx+dy*dy < 60*60) { this.locked=true; this.lockFlash=15; this.vx=0; this.vy=0; }
+            const r=60*cursorScale;
+            if (dx*dx+dy*dy<r*r) { this.locked=true; this.lockFlash=15; this.vx=0; this.vy=0; }
         }
-
-        // Key tool: remove lock
+        // Key
         if (activeTool==='key' && isMouseDown) {
             const dx=mouse.x-this.x, dy=mouse.y-this.y;
-            if (dx*dx+dy*dy < 60*60 && this.locked) { this.locked=false; this.lockFlash=20; }
+            const r=60*cursorScale;
+            if (dx*dx+dy*dy<r*r && this.locked) { this.locked=false; this.lockFlash=20; }
+        }
+        // Paint — change color
+        if (activeTool==='paint' && isMouseDown) {
+            const dx=mouse.x-this.x, dy=mouse.y-this.y;
+            const r=70*cursorScale;
+            if (dx*dx+dy*dy<r*r) { this.color=PAINT_COLORS[paintColorIdx]; }
+        }
+        // Rainbow — cycle hue
+        if (activeTool==='rainbow' && isMouseDown) {
+            const dx=mouse.x-this.x, dy=mouse.y-this.y;
+            const r=80*cursorScale;
+            if (dx*dx+dy*dy<r*r) {
+                this.color=`hsl(${(rainbowHue+Math.sqrt(dx*dx+dy*dy)*0.8)%360},100%,70%)`;
+            }
         }
 
         // Black holes
@@ -316,14 +493,33 @@ class Particle {
             if (dist<350 && dist>8) { const p=7000/(dist*dist); this.vx+=(dx/dist)*p; this.vy+=(dy/dist)*p; }
             if (dist<12) this.dead=true;
         });
+        // Gravity wells (planets)
+        gravityWells.forEach(gw => {
+            const dx=gw.x-this.x, dy=gw.y-this.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            if (dist<gw.radius+2) { this.dead=false; /* orbit stays */ }
+            if (dist<280 && dist>gw.radius) {
+                const p=gw.mass/(dist*dist);
+                this.vx+=(dx/dist)*p; this.vy+=(dy/dist)*p;
+            }
+        });
+        // Pulsars
+        pulsars.forEach(ps => {
+            const dx=this.x-ps.x, dy=this.y-ps.y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            const wave=ps.pulseRadius;
+            if (Math.abs(dist-wave)<12 && dist>2) {
+                const f=10/(dist+1);
+                this.vx+=(dx/dist)*f; this.vy+=(dy/dist)*f;
+            }
+        });
 
         this.x+=this.vx; this.y+=this.vy;
-        this.vx*=0.96; this.vy*=0.96;
-        // Bounce off walls
-        if (this.x < this.radius)       { this.x = this.radius;   this.vx *= -0.7; }
-        if (this.x > W - this.radius)   { this.x = W-this.radius; this.vx *= -0.7; }
-        if (this.y < this.radius)       { this.y = this.radius;   this.vy *= -0.7; }
-        if (this.y > H - this.radius)   { this.y = H-this.radius; this.vy *= -0.7; }
+        this.vx*=0.965; this.vy*=0.965;
+        if (this.x<this.radius){this.x=this.radius; this.vx*=-0.7;}
+        if (this.x>W-this.radius){this.x=W-this.radius; this.vx*=-0.7;}
+        if (this.y<this.radius){this.y=this.radius; this.vy*=-0.7;}
+        if (this.y>H-this.radius){this.y=H-this.radius; this.vy*=-0.7;}
     }
 
     draw() {
@@ -332,35 +528,40 @@ class Particle {
         const a=Math.max(0,Math.min(1,this.alpha));
 
         if (this.locked) {
-            // Locked particles: muted amber tint + lock icon
-            const flashBoost = this.lockFlash > 0 ? (this.lockFlash/15)*0.4 : 0;
+            const flashBoost=this.lockFlash>0?(this.lockFlash/15)*0.4:0;
             const grd=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.radius*4);
-            grd.addColorStop(0,`rgba(255,180,60,${0.5+flashBoost})`);
-            grd.addColorStop(1,'transparent');
-            ctx.globalAlpha=a*0.35;
-            ctx.beginPath(); ctx.arc(this.x,this.y,this.radius*4,0,Math.PI*2);
+            grd.addColorStop(0,`rgba(255,180,60,${0.5+flashBoost})`); grd.addColorStop(1,'transparent');
+            ctx.globalAlpha=a*0.35; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius*4,0,Math.PI*2);
             ctx.fillStyle=grd; ctx.fill();
-            // Core: amber
-            ctx.globalAlpha=a;
-            ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
-            ctx.fillStyle=`rgba(255,200,80,${0.85+flashBoost})`;
-            ctx.fill();
-            // Tiny lock ring
+            ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+            ctx.fillStyle=`rgba(255,200,80,${0.85+flashBoost})`; ctx.fill();
             ctx.beginPath(); ctx.arc(this.x,this.y,this.radius+2.5,0,Math.PI*2);
             ctx.strokeStyle=`rgba(255,160,30,${0.4+flashBoost})`; ctx.lineWidth=0.7; ctx.stroke();
-            ctx.restore();
-            return;
+            ctx.restore(); return;
+        }
+        if (this.frozen) {
+            const grd=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.radius*4);
+            grd.addColorStop(0,'rgba(150,230,255,0.5)'); grd.addColorStop(1,'transparent');
+            ctx.globalAlpha=a*0.3; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius*4,0,Math.PI*2);
+            ctx.fillStyle=grd; ctx.fill();
+            ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+            ctx.fillStyle='rgba(180,240,255,0.95)'; ctx.fill();
+            ctx.restore(); return;
         }
 
-        // Normal draw
+        // Heat tint
+        let drawColor = this.color;
+        if (this.heat>0) {
+            const h=this.heat;
+            drawColor=`rgba(255,${Math.floor(180*(1-h))},${Math.floor(60*(1-h))},1)`;
+        }
+
         const grd=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.radius*3);
-        grd.addColorStop(0,this.color); grd.addColorStop(1,'transparent');
-        ctx.globalAlpha=a*0.28;
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.radius*3,0,Math.PI*2);
+        grd.addColorStop(0,drawColor); grd.addColorStop(1,'transparent');
+        ctx.globalAlpha=a*0.28; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius*3,0,Math.PI*2);
         ctx.fillStyle=grd; ctx.fill();
-        ctx.globalAlpha=a;
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
-        ctx.fillStyle=this.color; ctx.fill();
+        ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+        ctx.fillStyle=drawColor; ctx.fill();
         ctx.restore();
     }
 }
@@ -368,30 +569,33 @@ class Particle {
 let particles = [];
 for (let i=0;i<180;i++) particles.push(new Particle());
 
-// ── MOUSE ────────────────────────────────────────────────────────────
+// ── MOUSE ──────────────────────────────────────────────────────
 const mouse = { x:-9999, y:-9999 };
-let lastMX=-9999, lastMY=-9999;
 
 window.addEventListener('mousemove', e => {
-    prevMX = lastMX; prevMY = lastMY;
+    prevMX=lastMX; prevMY=lastMY;
     mouse.x=lastMX=e.clientX; mouse.y=lastMY=e.clientY;
     cursorEl.style.left=e.clientX+'px'; cursorEl.style.top=e.clientY+'px';
 });
 
 window.addEventListener('mousedown', e => {
-    if (e.target.closest('#toolbar')||e.target.closest('#overlay')) return;
-    isMouseDown=true;
-    prevMX=lastMX; prevMY=lastMY;
+    if (e.target.closest('#toolbar')||e.target.closest('#overlay')||e.target.closest('#controls')) return;
+    isMouseDown=true; prevMX=lastMX; prevMY=lastMY;
 
     if (activeTool==='blackhole') {
-        spawnBlackHole(mouse.x, mouse.y);
+        spawnBlackHole(mouse.x,mouse.y);
     } else if (activeTool==='bomb') {
-        spawnBomb(mouse.x, mouse.y);
+        spawnBomb(mouse.x,mouse.y);
+    } else if (activeTool==='gravity') {
+        spawnGravityWell(mouse.x,mouse.y);
+    } else if (activeTool==='pulsar') {
+        spawnPulsar(mouse.x,mouse.y);
     } else if (activeTool==='fist') {
         particles.forEach(p => {
             if (p.locked) return;
             const dx=p.x-mouse.x, dy=p.y-mouse.y, dist=Math.sqrt(dx*dx+dy*dy)||1;
-            if (dist<300) { const f=(300-dist)/14; p.vx+=(dx/dist)*f; p.vy+=(dy/dist)*f; }
+            const range=300*cursorScale;
+            if (dist<range) { const f=(range-dist)/14; p.vx+=(dx/dist)*f; p.vy+=(dy/dist)*f; }
         });
         playTone(55,0.06,0.4,'sawtooth');
     } else if (activeTool==='hand') {
@@ -400,105 +604,121 @@ window.addEventListener('mousedown', e => {
             p.vx+=(Math.random()-0.5)*10; p.vy+=(Math.random()-0.5)*10;
         });
     } else if (activeTool==='source') {
-        spawnParticles(mouse.x, mouse.y, 10);
-        sourceTimer = setInterval(() => {
-            if (isMouseDown && activeTool==='source') spawnParticles(mouse.x, mouse.y, 5);
-        }, 80);
+        spawnParticles(mouse.x,mouse.y,10);
+        sourceTimer=setInterval(()=>{ if (isMouseDown && activeTool==='source') spawnParticles(mouse.x,mouse.y,5); },80);
+    } else if (activeTool==='freeze') {
+        playFreeze();
+    } else if (activeTool==='heat') {
+        playHeat();
+    } else if (activeTool==='repulsor') {
+        playTone(150,0.04,0.3,'sine');
+    } else if (activeTool==='paint') {
+        paintColorIdx=(paintColorIdx+1)%PAINT_COLORS.length;
     } else if (activeTool==='lock') {
-        // Lock happens in particle.update continuously while mousedown
         playLock();
     } else if (activeTool==='key') {
-        // Unlock happens in particle.update
         playUnlock();
     }
 });
-
 window.addEventListener('mouseup', () => {
-    isMouseDown=false;
-    clearInterval(sourceTimer); sourceTimer=null;
+    isMouseDown=false; clearInterval(sourceTimer); sourceTimer=null;
 });
 
-// ── TOOLBAR ──────────────────────────────────────────────────────────
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+    if (e.code==='Space') { e.preventDefault(); togglePause(); }
+    if (e.code==='KeyC') clearAll();
+});
+
+// ── TOOLBAR ────────────────────────────────────────────────────
 const toolNames = {
     hand:'MANO', fist:'PUÑO', drag:'ARRASTRAR', vortex:'VÓRTEX',
-    source:'FUENTE', eraser:'GOMA DE BORRAR',
-    blackhole:'AGUJERO NEGRO', bomb:'BOMBA',
+    repulsor:'REPULSOR', freeze:'FRÍO', heat:'CALOR',
+    source:'FUENTE', eraser:'GOMA',
+    blackhole:'AGUJERO NEGRO', bomb:'BOMBA', gravity:'PLANETA', pulsar:'PÚLSAR',
+    paint:'PINTAR', rainbow:'ARCOÍRIS',
     lock:'CANDADO', key:'LLAVE'
 };
-
 document.querySelectorAll('.tool-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        activeTool=btn.dataset.tool;
+        btn.classList.add('active'); activeTool=btn.dataset.tool;
         toolLabelEl.textContent='HERRAMIENTA: '+toolNames[activeTool];
         updateCursor();
     });
 });
 
-// ── SOURCE ───────────────────────────────────────────────────────────
+// ── PAUSE / CLEAR ──────────────────────────────────────────────
+function togglePause() {
+    isPaused=!isPaused;
+    pauseBtn.textContent = isPaused ? '▶ REANUDAR' : '⏸ PAUSA';
+    pauseBtn.classList.toggle('active', isPaused);
+    pauseText.textContent = isPaused ? '⏸ PAUSADO' : '▶ REANUDANDO';
+    pauseFlash.classList.add('show');
+    setTimeout(()=>pauseFlash.classList.remove('show'), isPaused ? 99999 : 800);
+    if (!isPaused) { pauseFlash.classList.remove('show'); }
+}
+function clearAll() {
+    particles=[]; blackHoles=[]; bombs=[]; gravityWells=[]; pulsars=[];
+}
+pauseBtn.addEventListener('click', togglePause);
+clearBtn.addEventListener('click', clearAll);
+
+// ── CURSOR SIZE SLIDER ─────────────────────────────────────────
+sizeSlider.addEventListener('input', () => {
+    cursorScale=parseFloat(sizeSlider.value);
+    sizeVal.textContent=cursorScale.toFixed(1)+'×';
+    updateCursor();
+});
+
+// ── SOURCE ─────────────────────────────────────────────────────
 function spawnParticles(x, y, count) {
     for (let i=0;i<count;i++) {
         if (particles.length>=MAX_PARTICLES) break;
         particles.push(new Particle(x+(Math.random()-0.5)*20, y+(Math.random()-0.5)*20, true));
     }
-    if (Math.random()>0.4) playTone(400+Math.random()*400, 0.007, 0.25);
+    if (Math.random()>0.4) playTone(400+Math.random()*400,0.007,0.25);
 }
 
-// ── BLACK HOLES ──────────────────────────────────────────────────────
-function spawnBlackHole(x,y) {
-    blackHoles.push({x,y,t:0,maxT:300,radius:0});
-    playTone(40,0.04,0.6,'sawtooth');
-}
-
+// ── BLACK HOLES ────────────────────────────────────────────────
+function spawnBlackHole(x,y) { blackHoles.push({x,y,t:0,maxT:300,radius:0}); playTone(40,0.04,0.6,'sawtooth'); }
 function updateBlackHoles() {
-    blackHoles = blackHoles.filter(bh => {
-        bh.t++;
-        bh.radius = Math.min(bh.t/20, 20);
-        if (bh.t > bh.maxT-40) bh.radius *= (bh.maxT-bh.t)/40;
-        return bh.t < bh.maxT;
+    blackHoles=blackHoles.filter(bh=>{
+        bh.t++; bh.radius=Math.min(bh.t/20,20);
+        if (bh.t>bh.maxT-40) bh.radius*=(bh.maxT-bh.t)/40;
+        return bh.t<bh.maxT;
     });
 }
-
 function drawBlackHoles() {
-    blackHoles.forEach(bh => {
+    blackHoles.forEach(bh=>{
         const progress=bh.t/bh.maxT, timeLeft=bh.maxT-bh.t;
         for (let ring=3;ring>=1;ring--) {
             const r=bh.radius*(ring*3+2), a=(0.15-ring*0.04)*Math.min(progress*5,1);
             const grd=ctx.createRadialGradient(bh.x,bh.y,bh.radius*ring,bh.x,bh.y,r);
-            grd.addColorStop(0,`rgba(80,40,160,${a})`);
-            grd.addColorStop(0.5,`rgba(160,60,60,${a*0.5})`);
-            grd.addColorStop(1,'transparent');
+            grd.addColorStop(0,`rgba(80,40,160,${a})`); grd.addColorStop(0.5,`rgba(160,60,60,${a*0.5})`); grd.addColorStop(1,'transparent');
             ctx.beginPath(); ctx.arc(bh.x,bh.y,r,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
         }
         const sg=ctx.createRadialGradient(bh.x,bh.y,0,bh.x,bh.y,bh.radius);
         sg.addColorStop(0,'#000'); sg.addColorStop(0.7,'#0a0020'); sg.addColorStop(1,'rgba(40,0,80,0.3)');
         ctx.beginPath(); ctx.arc(bh.x,bh.y,Math.max(bh.radius,1),0,Math.PI*2); ctx.fillStyle=sg; ctx.fill();
         ctx.beginPath(); ctx.arc(bh.x,bh.y,bh.radius+2,0,Math.PI*2);
-        ctx.strokeStyle=`rgba(180,100,255,${0.6*Math.min(progress*5,1)*(timeLeft<60?timeLeft/60:1)})`;
-        ctx.lineWidth=1.5; ctx.stroke();
+        ctx.strokeStyle=`rgba(180,100,255,${0.6*Math.min(progress*5,1)*(timeLeft<60?timeLeft/60:1)})`; ctx.lineWidth=1.5; ctx.stroke();
         if (bh.radius>3) {
-            const rem=1-progress;
-            ctx.beginPath(); ctx.arc(bh.x,bh.y,bh.radius+10,-Math.PI/2,-Math.PI/2+Math.PI*2*rem);
+            ctx.beginPath(); ctx.arc(bh.x,bh.y,bh.radius+10,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-progress));
             ctx.strokeStyle=`rgba(200,150,255,${0.5*Math.min(progress*3,1)})`; ctx.lineWidth=1; ctx.stroke();
         }
     });
 }
 
-// ── BOMBS ────────────────────────────────────────────────────────────
-function spawnBomb(x, y) {
-    bombs.push({ x, y, t:0, fuseT:120, exploded:false, shockwave:0 });
-    playTone(800, 0.04, 0.1, 'square');
-}
-
+// ── BOMBS ──────────────────────────────────────────────────────
+function spawnBomb(x,y) { bombs.push({x,y,t:0,fuseT:120,exploded:false,shockwave:0}); playTone(800,0.04,0.1,'square'); }
 function updateBombs() {
-    bombs = bombs.filter(b => {
+    bombs=bombs.filter(b=>{
         b.t++;
-        if (!b.exploded && b.t%15===0) playTone(700+b.t*2, 0.035, 0.09, 'square');
-        if (!b.exploded && b.t >= b.fuseT) {
-            b.exploded=true; b.shockwave=0;
-            playExplosion();
-            particles.forEach(p => {
+        if (!b.exploded && b.t%15===0) playTone(700+b.t*2,0.035,0.09,'square');
+        if (!b.exploded && b.t>=b.fuseT) {
+            b.exploded=true; b.shockwave=0; playExplosion();
+            particles.forEach(p=>{
                 if (p.locked) return;
                 const dx=p.x-b.x, dy=p.y-b.y, dist=Math.sqrt(dx*dx+dy*dy)||1;
                 if (dist<340) { const force=Math.pow((340-dist)/340,1.4)*60; p.vx+=(dx/dist)*force; p.vy+=(dy/dist)*force; }
@@ -515,13 +735,12 @@ function updateBombs() {
             }
         }
         if (b.exploded) { b.shockwave+=16; return b.shockwave<380; }
-        return b.t < b.fuseT+5;
+        return b.t<b.fuseT+5;
     });
 }
-
 function drawBombs() {
     const now=Date.now();
-    bombs.forEach(b => {
+    bombs.forEach(b=>{
         if (b.exploded) {
             const prog=b.shockwave/380, alpha=(1-prog)*0.75;
             ctx.beginPath(); ctx.arc(b.x,b.y,b.shockwave,0,Math.PI*2);
@@ -530,199 +749,193 @@ function drawBombs() {
             ctx.strokeStyle=`rgba(255,80,20,${alpha*0.35})`; ctx.lineWidth=1; ctx.stroke();
             if (prog<0.08) {
                 const fg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.shockwave*0.5);
-                fg.addColorStop(0,`rgba(255,220,120,${(0.08-prog)/0.08*0.5})`);
-                fg.addColorStop(1,'transparent');
-                ctx.beginPath(); ctx.arc(b.x,b.y,b.shockwave*0.5,0,Math.PI*2);
-                ctx.fillStyle=fg; ctx.fill();
+                fg.addColorStop(0,`rgba(255,220,120,${(0.08-prog)/0.08*0.5})`); fg.addColorStop(1,'transparent');
+                ctx.beginPath(); ctx.arc(b.x,b.y,b.shockwave*0.5,0,Math.PI*2); ctx.fillStyle=fg; ctx.fill();
             }
             return;
         }
-        const danger=b.t/b.fuseT;
-        const pulse=1+Math.sin(now*0.025)*0.1*danger;
-        ctx.save(); ctx.translate(b.x, b.y);
+        const danger=b.t/b.fuseT, pulse=1+Math.sin(now*0.025)*0.1*danger;
+        ctx.save(); ctx.translate(b.x,b.y);
         const grd=ctx.createRadialGradient(0,0,0,0,0,28*pulse);
-        grd.addColorStop(0,`rgba(255,${Math.floor(160*(1-danger))},0,0.3)`);
-        grd.addColorStop(1,'transparent');
+        grd.addColorStop(0,`rgba(255,${Math.floor(160*(1-danger))},0,0.3)`); grd.addColorStop(1,'transparent');
         ctx.beginPath(); ctx.arc(0,0,28*pulse,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
         ctx.beginPath(); ctx.arc(0,0,11*pulse,0,Math.PI*2);
         ctx.fillStyle=`rgb(${Math.floor(35+danger*50)},20,20)`; ctx.fill();
         ctx.strokeStyle=`rgba(255,${Math.floor(180*(1-danger))},30,0.9)`; ctx.lineWidth=1.5; ctx.stroke();
         ctx.beginPath(); ctx.arc(0,0,16,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-danger));
-        ctx.strokeStyle=`rgba(255,220,50,0.85)`; ctx.lineWidth=2; ctx.stroke();
+        ctx.strokeStyle='rgba(255,220,50,0.85)'; ctx.lineWidth=2; ctx.stroke();
         if (Math.random()>0.25) {
-            ctx.beginPath();
-            ctx.arc((Math.random()-0.5)*3,-15+(Math.random()-0.5)*2, 2,0,Math.PI*2);
+            ctx.beginPath(); ctx.arc((Math.random()-0.5)*3,-15+(Math.random()-0.5)*2,2,0,Math.PI*2);
             ctx.fillStyle=`rgba(255,${180+Math.floor(Math.random()*75)},40,0.95)`; ctx.fill();
         }
         ctx.restore();
     });
 }
 
-// ── VORTEX VISUAL ────────────────────────────────────────────────────
-function drawVortexField() {
-    if (activeTool !== 'vortex') return;
-    const t = Date.now() * 0.0012;
-    const range = 220;
-    // Spinning spiral arms
-    for (let arm = 0; arm < 3; arm++) {
-        const armOffset = (arm / 3) * Math.PI * 2;
-        ctx.beginPath();
-        for (let r = 8; r < range; r += 3) {
-            const angle = t * 2.5 + armOffset + r * 0.045;
-            const x = lastMX + Math.cos(angle) * r;
-            const y = lastMY + Math.sin(angle) * r;
-            const alpha = (1 - r/range) * 0.12;
-            if (r === 8) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+// ── GRAVITY WELLS (PLANETS) ────────────────────────────────────
+function spawnGravityWell(x,y) {
+    const r=14+Math.random()*10;
+    gravityWells.push({x,y,radius:r,mass:3000+Math.random()*2000,t:0,maxT:600,
+        color:`hsl(${Math.random()*360},60%,55%)`});
+    playTone(180,0.05,0.5,'sine');
+}
+function updateGravityWells() {
+    gravityWells=gravityWells.filter(gw=>{ gw.t++; return gw.t<gw.maxT; });
+}
+function drawGravityWells() {
+    const now=Date.now();
+    gravityWells.forEach(gw=>{
+        const life=gw.t/gw.maxT;
+        const fade=life>0.8?(1-life)/0.2:1;
+        // Atmosphere rings
+        for (let ring=3;ring>=1;ring--) {
+            const r2=gw.radius*(ring*2.5+1);
+            const grd=ctx.createRadialGradient(gw.x,gw.y,gw.radius,gw.x,gw.y,r2);
+            grd.addColorStop(0,gw.color.replace(')',`,${0.12*fade})`).replace('hsl','hsla'));
+            grd.addColorStop(1,'transparent');
+            ctx.beginPath(); ctx.arc(gw.x,gw.y,r2,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
         }
-        ctx.strokeStyle = `rgba(120,200,255,0.13)`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-    }
-    // Outer fade ring
-    const grd = ctx.createRadialGradient(lastMX,lastMY,range*0.5, lastMX,lastMY,range);
-    grd.addColorStop(0, 'rgba(80,160,255,0.06)');
-    grd.addColorStop(1, 'transparent');
-    ctx.beginPath(); ctx.arc(lastMX,lastMY,range,0,Math.PI*2);
-    ctx.fillStyle=grd; ctx.fill();
+        // Planet body
+        const pulse=1+Math.sin(now*0.002)*0.04;
+        const pg=ctx.createRadialGradient(gw.x-gw.radius*0.3,gw.y-gw.radius*0.3,0,gw.x,gw.y,gw.radius*pulse);
+        pg.addColorStop(0,'rgba(255,255,255,0.6)'); pg.addColorStop(0.3,gw.color);
+        pg.addColorStop(1,gw.color.replace('55%','25%'));
+        ctx.globalAlpha=fade;
+        ctx.beginPath(); ctx.arc(gw.x,gw.y,gw.radius*pulse,0,Math.PI*2); ctx.fillStyle=pg; ctx.fill();
+        // Ring (equatorial)
+        ctx.beginPath();
+        ctx.ellipse(gw.x,gw.y,gw.radius*2.4,gw.radius*0.5,0.3,0,Math.PI*2);
+        ctx.strokeStyle=gw.color.replace(')',`,${0.35*fade})`).replace('hsl','hsla'); ctx.lineWidth=1.5; ctx.stroke();
+        ctx.globalAlpha=1;
+        // Timer arc
+        ctx.beginPath(); ctx.arc(gw.x,gw.y,gw.radius+4,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-life));
+        ctx.strokeStyle=`rgba(255,255,255,${0.2*fade})`; ctx.lineWidth=1; ctx.stroke();
+    });
 }
 
-// ── DRAG VISUAL ──────────────────────────────────────────────────────
+// ── PULSARS ────────────────────────────────────────────────────
+function spawnPulsar(x,y) {
+    pulsars.push({x,y,t:0,maxT:400,pulseRadius:0,pulseSpeed:2.5,cycle:0});
+    playPulsar();
+}
+function updatePulsars() {
+    pulsars=pulsars.filter(ps=>{
+        ps.t++;
+        ps.pulseRadius+=ps.pulseSpeed;
+        if (ps.pulseRadius>320) { ps.pulseRadius=0; ps.cycle++; if(Math.random()>0.5) playPulsar(); }
+        return ps.t<ps.maxT;
+    });
+}
+function drawPulsars() {
+    pulsars.forEach(ps=>{
+        const life=1-ps.t/ps.maxT;
+        const wave=ps.pulseRadius;
+        if (wave>4) {
+            const wAlpha=(1-wave/320)*0.35*life;
+            const grd=ctx.createRadialGradient(ps.x,ps.y,Math.max(wave-6,0),ps.x,ps.y,wave+6);
+            grd.addColorStop(0,'transparent'); grd.addColorStop(0.5,`rgba(180,255,200,${wAlpha})`); grd.addColorStop(1,'transparent');
+            ctx.beginPath(); ctx.arc(ps.x,ps.y,wave+6,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
+            ctx.beginPath(); ctx.arc(ps.x,ps.y,wave,0,Math.PI*2);
+            ctx.strokeStyle=`rgba(150,255,180,${wAlpha*2})`; ctx.lineWidth=1; ctx.stroke();
+        }
+        // Core star
+        const coreGrd=ctx.createRadialGradient(ps.x,ps.y,0,ps.x,ps.y,8);
+        coreGrd.addColorStop(0,`rgba(255,255,255,${life})`); coreGrd.addColorStop(0.4,`rgba(150,255,200,${0.8*life})`); coreGrd.addColorStop(1,'transparent');
+        ctx.beginPath(); ctx.arc(ps.x,ps.y,8,0,Math.PI*2); ctx.fillStyle=coreGrd; ctx.fill();
+        // Jet beams
+        const jLen=20+Math.sin(ps.t*0.15)*8;
+        ctx.save(); ctx.translate(ps.x,ps.y);
+        for (let j=0;j<2;j++) {
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, (j===0?-1:1)*jLen);
+            ctx.strokeStyle=`rgba(180,255,220,${0.5*life})`; ctx.lineWidth=1.5*(1-ps.t/ps.maxT); ctx.stroke();
+        }
+        ctx.restore();
+    });
+}
+
+// ── FIELD VISUALS ──────────────────────────────────────────────
+function drawVortexField() {
+    if (activeTool!=='vortex') return;
+    const t=Date.now()*0.0012, range=220*cursorScale;
+    for (let arm=0;arm<3;arm++) {
+        const ao=(arm/3)*Math.PI*2;
+        ctx.beginPath();
+        for (let r=8;r<range;r+=3) {
+            const angle=t*2.5+ao+r*0.045;
+            const x=lastMX+Math.cos(angle)*r, y=lastMY+Math.sin(angle)*r;
+            r===8?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        }
+        ctx.strokeStyle='rgba(120,200,255,0.13)'; ctx.lineWidth=0.8; ctx.stroke();
+    }
+    const grd=ctx.createRadialGradient(lastMX,lastMY,range*0.5,lastMX,lastMY,range);
+    grd.addColorStop(0,'rgba(80,160,255,0.06)'); grd.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,range,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
+}
+function drawRepulsorField() {
+    if (activeTool!=='repulsor') return;
+    const t=Date.now()*0.0015, range=200*cursorScale;
+    for (let i=0;i<6;i++) {
+        const angle=(i/6)*Math.PI*2+t;
+        const x2=lastMX+Math.cos(angle)*range*0.85, y2=lastMY+Math.sin(angle)*range*0.85;
+        ctx.beginPath(); ctx.moveTo(lastMX,lastMY); ctx.lineTo(x2,y2);
+        ctx.strokeStyle='rgba(255,180,100,0.07)'; ctx.lineWidth=1; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,range,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,160,80,0.15)'; ctx.lineWidth=1; ctx.stroke();
+}
+function drawFreezeField() {
+    if (activeTool!=='freeze') return;
+    const t=Date.now()*0.001, range=100*cursorScale;
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,range,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(150,230,255,${0.2+Math.sin(t)*0.05})`; ctx.lineWidth=1; ctx.stroke();
+    for (let i=0;i<6;i++) {
+        const a=(i/6)*Math.PI*2, len=range*0.55;
+        ctx.beginPath(); ctx.moveTo(lastMX,lastMY); ctx.lineTo(lastMX+Math.cos(a)*len,lastMY+Math.sin(a)*len);
+        ctx.strokeStyle='rgba(150,230,255,0.1)'; ctx.lineWidth=0.7; ctx.stroke();
+    }
+}
+function drawHeatField() {
+    if (activeTool!=='heat') return;
+    const range=120*cursorScale, t=Date.now()*0.003;
+    for (let r=range;r>10;r-=25) {
+        const a=(1-r/range)*0.25*Math.abs(Math.sin(t+r*0.05));
+        ctx.beginPath(); ctx.arc(lastMX,lastMY,r,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(255,${Math.floor(100+r)},20,${a})`; ctx.lineWidth=1; ctx.stroke();
+    }
+}
+function drawPaintField() {
+    if (activeTool!=='paint' && activeTool!=='rainbow') return;
+    const r=activeTool==='paint'?70*cursorScale:80*cursorScale;
+    const col=activeTool==='paint'?PAINT_COLORS[paintColorIdx]:`hsl(${rainbowHue},100%,65%)`;
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,r,0,Math.PI*2);
+    ctx.strokeStyle=col.includes('hsl')?col.replace('hsl(','hsla(').replace(')',',0.25)'):col+'40';
+    ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,3,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+}
 function drawDragField() {
-    if (activeTool !== 'drag') return;
-    const range = 160;
-    const t = Date.now() * 0.002;
+    if (activeTool!=='drag') return;
+    const range=160*cursorScale, t=Date.now()*0.002;
     ctx.beginPath(); ctx.arc(lastMX,lastMY,range,0,Math.PI*2);
     ctx.strokeStyle=`rgba(180,230,255,${0.08+Math.sin(t)*0.03})`; ctx.lineWidth=1; ctx.stroke();
     ctx.beginPath(); ctx.arc(lastMX,lastMY,range*0.5,0,Math.PI*2);
     ctx.strokeStyle=`rgba(180,230,255,${0.05+Math.sin(t)*0.02})`; ctx.lineWidth=0.5; ctx.stroke();
 }
-
-// ── ERASER RING ──────────────────────────────────────────────────────
 function drawEraserRing() {
     if (activeTool!=='eraser') return;
-    ctx.beginPath(); ctx.arc(lastMX,lastMY,50,0,Math.PI*2);
+    const r=50*cursorScale;
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,r,0,Math.PI*2);
     ctx.strokeStyle='rgba(255,200,150,0.22)'; ctx.lineWidth=1; ctx.stroke();
-    ctx.beginPath(); ctx.arc(lastMX,lastMY,2,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,200,150,0.5)'; ctx.fill();
 }
-
-// ── LOCK / KEY VISUAL ────────────────────────────────────────────────
 function drawLockKeyField() {
     if (activeTool!=='lock' && activeTool!=='key') return;
-    const isLock = activeTool==='lock';
-    const col = isLock ? '255,180,50' : '100,255,160';
-    ctx.beginPath(); ctx.arc(lastMX,lastMY,60,0,Math.PI*2);
+    const col=activeTool==='lock'?'255,180,50':'100,255,160';
+    const r=60*cursorScale;
+    ctx.beginPath(); ctx.arc(lastMX,lastMY,r,0,Math.PI*2);
     ctx.strokeStyle=`rgba(${col},0.2)`; ctx.lineWidth=1; ctx.stroke();
-    ctx.beginPath(); ctx.arc(lastMX,lastMY,30,0,Math.PI*2);
-    ctx.strokeStyle=`rgba(${col},0.1)`; ctx.lineWidth=0.5; ctx.stroke();
 }
 
-// ── CURSOR SVGs ──────────────────────────────────────────────────────
-const cursorSVGs = {
-    hand:`<svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="10" stroke="rgba(150,200,255,0.6)" stroke-width="1.5"/>
-        <circle cx="18" cy="18" r="3" fill="rgba(150,200,255,0.8)"/>
-        <line x1="18" y1="2" x2="18" y2="8" stroke="rgba(150,200,255,0.4)" stroke-width="1"/>
-        <line x1="18" y1="28" x2="18" y2="34" stroke="rgba(150,200,255,0.4)" stroke-width="1"/>
-        <line x1="2" y1="18" x2="8" y2="18" stroke="rgba(150,200,255,0.4)" stroke-width="1"/>
-        <line x1="28" y1="18" x2="34" y2="18" stroke="rgba(150,200,255,0.4)" stroke-width="1"/>
-    </svg>`,
-    fist:`<svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="18" r="10" stroke="rgba(255,120,100,0.7)" stroke-width="1.5"/>
-        <circle cx="18" cy="18" r="3" fill="rgba(255,120,100,0.9)"/>
-        <line x1="10" y1="10" x2="4" y2="4" stroke="rgba(255,120,100,0.5)" stroke-width="1"/>
-        <line x1="26" y1="10" x2="32" y2="4" stroke="rgba(255,120,100,0.5)" stroke-width="1"/>
-        <line x1="10" y1="26" x2="4" y2="32" stroke="rgba(255,120,100,0.5)" stroke-width="1"/>
-        <line x1="26" y1="26" x2="32" y2="32" stroke="rgba(255,120,100,0.5)" stroke-width="1"/>
-    </svg>`,
-    drag:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="12" stroke="rgba(180,230,255,0.5)" stroke-width="1.5" stroke-dasharray="4 2"/>
-        <circle cx="20" cy="20" r="3" fill="rgba(180,230,255,0.9)"/>
-        <line x1="20" y1="4" x2="20" y2="10" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="20" y1="30" x2="20" y2="36" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="4" y1="20" x2="10" y2="20" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="30" y1="20" x2="36" y2="20" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="7" y1="7" x2="11" y2="11" stroke="rgba(180,230,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="29" y1="7" x2="33" y2="11" stroke="rgba(180,230,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="7" y1="33" x2="11" y2="29" stroke="rgba(180,230,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="29" y1="33" x2="33" y2="29" stroke="rgba(180,230,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-    </svg>`,
-    vortex:`<svg width="42" height="42" viewBox="0 0 42 42" fill="none">
-        <path d="M21 21 m-14 0 a14 14 0 1 1 4 9.9" stroke="rgba(120,200,255,0.7)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        <path d="M21 21 m-9 0 a9 9 0 1 1 2.6 6.4" stroke="rgba(120,200,255,0.5)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-        <path d="M21 21 m-4 0 a4 4 0 1 1 1.2 2.8" stroke="rgba(120,200,255,0.8)" stroke-width="1" stroke-linecap="round" fill="none"/>
-        <circle cx="21" cy="21" r="2" fill="rgba(120,200,255,0.9)"/>
-    </svg>`,
-    source:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-        <circle cx="19" cy="19" r="5" fill="rgba(200,240,255,0.9)"/>
-        <circle cx="19" cy="19" r="11" stroke="rgba(150,220,255,0.3)" stroke-width="1"/>
-        <line x1="19" y1="2" x2="19" y2="10" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="19" y1="28" x2="19" y2="36" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="2" y1="19" x2="10" y2="19" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="28" y1="19" x2="36" y2="19" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="7" y1="7" x2="12" y2="12" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="31" y1="7" x2="26" y2="12" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="7" y1="31" x2="12" y2="26" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="31" y1="31" x2="26" y2="26" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/>
-    </svg>`,
-    eraser:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="18" stroke="rgba(255,200,150,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
-        <circle cx="20" cy="20" r="2.5" fill="rgba(255,200,150,0.7)"/>
-        <line x1="20" y1="5" x2="20" y2="11" stroke="rgba(255,200,150,0.5)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="20" y1="29" x2="20" y2="35" stroke="rgba(255,200,150,0.5)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="5" y1="20" x2="11" y2="20" stroke="rgba(255,200,150,0.5)" stroke-width="1" stroke-linecap="round"/>
-        <line x1="29" y1="20" x2="35" y2="20" stroke="rgba(255,200,150,0.5)" stroke-width="1" stroke-linecap="round"/>
-    </svg>`,
-    blackhole:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="6" fill="#000" stroke="rgba(160,80,255,0.8)" stroke-width="1.5"/>
-        <circle cx="20" cy="20" r="12" stroke="rgba(120,60,200,0.3)" stroke-width="1" stroke-dasharray="2 3"/>
-        <circle cx="20" cy="20" r="17" stroke="rgba(80,40,150,0.15)" stroke-width="1"/>
-        <circle cx="20" cy="20" r="2" fill="rgba(180,120,255,0.6)"/>
-    </svg>`,
-    bomb:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="23" r="11" fill="rgba(35,15,15,0.95)" stroke="rgba(255,140,40,0.75)" stroke-width="1.5"/>
-        <line x1="20" y1="12" x2="20" y2="5" stroke="rgba(255,200,50,0.85)" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="20" cy="4" r="2.5" fill="rgba(255,220,60,0.95)"/>
-        <circle cx="20" cy="23" r="3.5" fill="rgba(255,90,20,0.4)"/>
-        <circle cx="16" cy="19" r="1.5" fill="rgba(255,255,255,0.15)"/>
-    </svg>`,
-    lock:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-        <rect x="9" y="18" width="20" height="14" rx="3" stroke="rgba(255,180,50,0.8)" stroke-width="1.5" fill="rgba(255,180,50,0.08)"/>
-        <path d="M13 18 v-5 a6 6 0 0 1 12 0 v5" stroke="rgba(255,180,50,0.7)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <circle cx="19" cy="25" r="2.5" fill="rgba(255,180,50,0.8)"/>
-        <line x1="19" y1="27" x2="19" y2="30" stroke="rgba(255,180,50,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>`,
-    key:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="14" cy="18" r="7" stroke="rgba(100,255,160,0.7)" stroke-width="1.5" fill="rgba(100,255,160,0.06)"/>
-        <circle cx="14" cy="18" r="3" fill="rgba(100,255,160,0.4)"/>
-        <line x1="20" y1="21" x2="34" y2="21" stroke="rgba(100,255,160,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="30" y1="21" x2="30" y2="26" stroke="rgba(100,255,160,0.5)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="34" y1="21" x2="34" y2="25" stroke="rgba(100,255,160,0.5)" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>`
-};
-
-function updateCursor() { cursorEl.innerHTML = cursorSVGs[activeTool]||cursorSVGs.hand; }
-
-// ── NEBULA ───────────────────────────────────────────────────────────
-let nebulaCanvas;
-function buildNebula() {
-    nebulaCanvas=document.createElement('canvas');
-    nebulaCanvas.width=W; nebulaCanvas.height=H;
-    const nc=nebulaCanvas.getContext('2d');
-    const bg=nc.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.8);
-    bg.addColorStop(0,'#05051a'); bg.addColorStop(0.5,'#020210'); bg.addColorStop(1,'#00000f');
-    nc.fillStyle=bg; nc.fillRect(0,0,W,H);
-    [{x:W*.2,y:H*.3,r:W*.25,c:'rgba(40,20,80,0.12)'},
-     {x:W*.75,y:H*.6,r:W*.3,c:'rgba(20,40,80,0.1)'},
-     {x:W*.5,y:H*.8,r:W*.2,c:'rgba(60,20,60,0.08)'}].forEach(cl=>{
-        const g=nc.createRadialGradient(cl.x,cl.y,0,cl.x,cl.y,cl.r);
-        g.addColorStop(0,cl.c); g.addColorStop(1,'transparent');
-        nc.fillStyle=g; nc.fillRect(0,0,W,H);
-    });
-}
-
-// ── CONNECTIONS ──────────────────────────────────────────────────────
+// ── CONNECTIONS ────────────────────────────────────────────────
 function drawConnections() {
     const maxD=90, maxD2=maxD*maxD;
     for (let i=0;i<particles.length;i++) {
@@ -733,63 +946,106 @@ function drawConnections() {
             const d2=dx*dx+dy*dy;
             if (d2<maxD2) {
                 const a=(1-Math.sqrt(d2)/maxD)*0.055;
-                // locked-to-locked connections: amber tint
-                const bothLocked = particles[i].locked && particles[j].locked;
+                const bothLocked=particles[i].locked&&particles[j].locked;
                 ctx.beginPath();
-                ctx.strokeStyle = bothLocked
-                    ? `rgba(255,180,50,${a*1.2})`
-                    : `rgba(150,180,255,${a})`;
+                ctx.strokeStyle=bothLocked?`rgba(255,180,50,${a*1.2})`:`rgba(150,180,255,${a})`;
                 ctx.lineWidth=0.5;
-                ctx.moveTo(particles[i].x,particles[i].y);
-                ctx.lineTo(particles[j].x,particles[j].y);
+                ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y);
                 ctx.stroke();
             }
         }
     }
 }
 
-// ── MAIN LOOP ────────────────────────────────────────────────────────
-function animate() {
-    ctx.fillStyle='rgba(0,0,10,0.18)';
-    ctx.fillRect(0,0,W,H);
+// ── CURSOR SVGs ────────────────────────────────────────────────
+const cursorSVGs = {
+    hand:`<svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="10" stroke="rgba(150,200,255,0.6)" stroke-width="1.5"/><circle cx="18" cy="18" r="3" fill="rgba(150,200,255,0.8)"/><line x1="18" y1="2" x2="18" y2="8" stroke="rgba(150,200,255,0.4)" stroke-width="1"/><line x1="18" y1="28" x2="18" y2="34" stroke="rgba(150,200,255,0.4)" stroke-width="1"/><line x1="2" y1="18" x2="8" y2="18" stroke="rgba(150,200,255,0.4)" stroke-width="1"/><line x1="28" y1="18" x2="34" y2="18" stroke="rgba(150,200,255,0.4)" stroke-width="1"/></svg>`,
+    fist:`<svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="10" stroke="rgba(255,120,100,0.7)" stroke-width="1.5"/><circle cx="18" cy="18" r="3" fill="rgba(255,120,100,0.9)"/><line x1="10" y1="10" x2="4" y2="4" stroke="rgba(255,120,100,0.5)" stroke-width="1"/><line x1="26" y1="10" x2="32" y2="4" stroke="rgba(255,120,100,0.5)" stroke-width="1"/><line x1="10" y1="26" x2="4" y2="32" stroke="rgba(255,120,100,0.5)" stroke-width="1"/><line x1="26" y1="26" x2="32" y2="32" stroke="rgba(255,120,100,0.5)" stroke-width="1"/></svg>`,
+    drag:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" stroke="rgba(180,230,255,0.5)" stroke-width="1.5" stroke-dasharray="4 2"/><circle cx="20" cy="20" r="3" fill="rgba(180,230,255,0.9)"/><line x1="20" y1="4" x2="20" y2="10" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="20" y1="30" x2="20" y2="36" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="20" x2="10" y2="20" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="20" x2="36" y2="20" stroke="rgba(180,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    vortex:`<svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M21 21 m-14 0 a14 14 0 1 1 4 9.9" stroke="rgba(120,200,255,0.7)" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M21 21 m-9 0 a9 9 0 1 1 2.6 6.4" stroke="rgba(120,200,255,0.5)" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M21 21 m-4 0 a4 4 0 1 1 1.2 2.8" stroke="rgba(120,200,255,0.8)" stroke-width="1" stroke-linecap="round" fill="none"/><circle cx="21" cy="21" r="2" fill="rgba(120,200,255,0.9)"/></svg>`,
+    repulsor:`<svg width="42" height="42" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="21" r="10" stroke="rgba(255,180,100,0.7)" stroke-width="1.5"/><circle cx="21" cy="21" r="3" fill="rgba(255,180,100,0.9)"/><line x1="21" y1="2" x2="21" y2="10" stroke="rgba(255,180,100,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="21" y1="32" x2="21" y2="40" stroke="rgba(255,180,100,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="21" x2="10" y2="21" stroke="rgba(255,180,100,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="32" y1="21" x2="40" y2="21" stroke="rgba(255,180,100,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="7" x2="13" y2="13" stroke="rgba(255,180,100,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="29" y1="7" x2="35" y2="13" stroke="rgba(255,180,100,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="7" y1="35" x2="13" y2="29" stroke="rgba(255,180,100,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="29" y1="35" x2="35" y2="29" stroke="rgba(255,180,100,0.4)" stroke-width="1" stroke-linecap="round"/></svg>`,
+    freeze:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="10" stroke="rgba(150,230,255,0.7)" stroke-width="1.5"/><line x1="20" y1="4" x2="20" y2="36" stroke="rgba(150,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="20" x2="36" y2="20" stroke="rgba(150,230,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="8" x2="32" y2="32" stroke="rgba(150,230,255,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="32" y1="8" x2="8" y2="32" stroke="rgba(150,230,255,0.4)" stroke-width="1" stroke-linecap="round"/><circle cx="20" cy="20" r="3" fill="rgba(200,240,255,0.9)"/></svg>`,
+    heat:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="10" stroke="rgba(255,120,30,0.7)" stroke-width="1.5"/><circle cx="20" cy="20" r="4" fill="rgba(255,200,50,0.9)"/><path d="M20 6 Q23 11 20 15 Q17 11 20 6Z" fill="rgba(255,100,20,0.7)"/><path d="M14 8 Q17 13 14 17 Q11 13 14 8Z" fill="rgba(255,80,20,0.5)"/><path d="M26 8 Q29 13 26 17 Q23 13 26 8Z" fill="rgba(255,80,20,0.5)"/></svg>`,
+    source:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none"><circle cx="19" cy="19" r="5" fill="rgba(200,240,255,0.9)"/><circle cx="19" cy="19" r="11" stroke="rgba(150,220,255,0.3)" stroke-width="1"/><line x1="19" y1="2" x2="19" y2="10" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="19" y1="28" x2="19" y2="36" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="19" x2="10" y2="19" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="19" x2="36" y2="19" stroke="rgba(150,220,255,0.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="7" x2="12" y2="12" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="31" y1="7" x2="26" y2="12" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="7" y1="31" x2="12" y2="26" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="31" y1="31" x2="26" y2="26" stroke="rgba(150,220,255,0.4)" stroke-width="1" stroke-linecap="round"/></svg>`,
+    eraser:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="rgba(255,200,150,0.2)" stroke-width="1" stroke-dasharray="3 2"/><circle cx="20" cy="20" r="2.5" fill="rgba(255,200,150,0.7)"/></svg>`,
+    blackhole:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="6" fill="#000" stroke="rgba(160,80,255,0.8)" stroke-width="1.5"/><circle cx="20" cy="20" r="12" stroke="rgba(120,60,200,0.3)" stroke-width="1" stroke-dasharray="2 3"/><circle cx="20" cy="20" r="17" stroke="rgba(80,40,150,0.15)" stroke-width="1"/></svg>`,
+    bomb:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="23" r="11" fill="rgba(35,15,15,0.95)" stroke="rgba(255,140,40,0.75)" stroke-width="1.5"/><line x1="20" y1="12" x2="20" y2="5" stroke="rgba(255,200,50,0.85)" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="4" r="2.5" fill="rgba(255,220,60,0.95)"/><circle cx="20" cy="23" r="3.5" fill="rgba(255,90,20,0.4)"/></svg>`,
+    gravity:`<svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="9" fill="rgba(100,180,255,0.3)" stroke="rgba(120,200,255,0.7)" stroke-width="1.5"/><ellipse cx="22" cy="22" rx="16" ry="5" stroke="rgba(120,200,255,0.4)" stroke-width="1" fill="none"/><circle cx="22" cy="22" r="3" fill="rgba(200,230,255,0.8)"/></svg>`,
+    pulsar:`<svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="4" fill="rgba(150,255,200,0.9)"/><circle cx="22" cy="22" r="10" stroke="rgba(150,255,200,0.3)" stroke-width="1" stroke-dasharray="2 2"/><circle cx="22" cy="22" r="18" stroke="rgba(150,255,200,0.15)" stroke-width="1" stroke-dasharray="2 4"/><line x1="22" y1="2" x2="22" y2="12" stroke="rgba(150,255,200,0.6)" stroke-width="1.5" stroke-linecap="round"/><line x1="22" y1="32" x2="22" y2="42" stroke="rgba(150,255,200,0.6)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    paint:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="10" fill="rgba(255,100,160,0.3)" stroke="rgba(255,100,160,0.8)" stroke-width="1.5"/><circle cx="20" cy="20" r="4" fill="rgba(255,100,160,0.9)"/><line x1="24" y1="10" x2="32" y2="4" stroke="rgba(255,100,160,0.5)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    rainbow:`<svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M7 28 a15 15 0 0 1 28 0" stroke="rgba(255,80,80,0.8)" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9 28 a13 13 0 0 1 24 0" stroke="rgba(255,180,50,0.7)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M11 28 a11 11 0 0 1 20 0" stroke="rgba(80,220,100,0.7)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M13 28 a9 9 0 0 1 16 0" stroke="rgba(80,160,255,0.8)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M15 28 a7 7 0 0 1 12 0" stroke="rgba(180,80,255,0.8)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`,
+    lock:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none"><rect x="9" y="18" width="20" height="14" rx="3" stroke="rgba(255,180,50,0.8)" stroke-width="1.5" fill="rgba(255,180,50,0.08)"/><path d="M13 18 v-5 a6 6 0 0 1 12 0 v5" stroke="rgba(255,180,50,0.7)" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="19" cy="25" r="2.5" fill="rgba(255,180,50,0.8)"/></svg>`,
+    key:`<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="14" cy="18" r="7" stroke="rgba(100,255,160,0.7)" stroke-width="1.5" fill="rgba(100,255,160,0.06)"/><circle cx="14" cy="18" r="3" fill="rgba(100,255,160,0.4)"/><line x1="20" y1="21" x2="34" y2="21" stroke="rgba(100,255,160,0.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="21" x2="30" y2="26" stroke="rgba(100,255,160,0.5)" stroke-width="1.5" stroke-linecap="round"/><line x1="34" y1="21" x2="34" y2="25" stroke="rgba(100,255,160,0.5)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+};
 
+function updateCursor() {
+    const s=cursorScale;
+    cursorEl.style.transform=`translate(-50%,-50%) scale(${s})`;
+    cursorEl.innerHTML=cursorSVGs[activeTool]||cursorSVGs.hand;
+}
+
+// ── NEBULA ─────────────────────────────────────────────────────
+let nebulaCanvas;
+function buildNebula() {
+    nebulaCanvas=document.createElement('canvas'); nebulaCanvas.width=W; nebulaCanvas.height=H;
+    const nc=nebulaCanvas.getContext('2d');
+    const bg=nc.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.8);
+    bg.addColorStop(0,'#05051a'); bg.addColorStop(0.5,'#020210'); bg.addColorStop(1,'#00000f');
+    nc.fillStyle=bg; nc.fillRect(0,0,W,H);
+    [{x:W*.2,y:H*.3,r:W*.25,c:'rgba(40,20,80,0.12)'},{x:W*.75,y:H*.6,r:W*.3,c:'rgba(20,40,80,0.1)'},{x:W*.5,y:H*.8,r:W*.2,c:'rgba(60,20,60,0.08)'}].forEach(cl=>{
+        const g=nc.createRadialGradient(cl.x,cl.y,0,cl.x,cl.y,cl.r);
+        g.addColorStop(0,cl.c); g.addColorStop(1,'transparent');
+        nc.fillStyle=g; nc.fillRect(0,0,W,H);
+    });
+}
+
+// ── MAIN LOOP ──────────────────────────────────────────────────
+function animate() {
+    requestAnimationFrame(animate);
+
+    // FPS
+    fpsFrames++;
+    const now=Date.now();
+    if (now-fpsClock>600) { lastFPS=Math.round(fpsFrames/(now-fpsClock)*1000); fpsFrames=0; fpsClock=now; fpsLabelEl.textContent='FPS: '+lastFPS; }
+
+    if (isPaused) {
+        // draw pause vignette
+        ctx.fillStyle='rgba(0,0,10,0.05)'; ctx.fillRect(0,0,W,H);
+        return;
+    }
+
+    rainbowHue=(rainbowHue+1.2)%360;
+
+    ctx.fillStyle='rgba(0,0,10,0.18)'; ctx.fillRect(0,0,W,H);
     if (nebulaCanvas) { ctx.globalAlpha=0.06; ctx.drawImage(nebulaCanvas,0,0); ctx.globalAlpha=1; }
 
-    updateBlackHoles(); updateBombs();
-    drawBlackHoles();   drawBombs();
+    updateBlackHoles(); updateBombs(); updateGravityWells(); updatePulsars();
+    drawBlackHoles(); drawBombs(); drawGravityWells(); drawPulsars();
 
-    drawVortexField();
-    drawDragField();
+    drawVortexField(); drawRepulsorField(); drawFreezeField(); drawHeatField();
+    drawDragField(); drawPaintField();
 
     drawConnections();
 
-    // Compute mouse delta for drag tool
-    const dmx = lastMX - prevMX;
-    const dmy = lastMY - prevMY;
-
-    particles.forEach(p => p.update(mouse, dmx, dmy));
-    particles = particles.filter(p=>!p.dead);
+    const dmx=lastMX-prevMX, dmy=lastMY-prevMY;
+    particles.forEach(p=>p.update(mouse,dmx,dmy));
+    particles=particles.filter(p=>!p.dead);
     particles.forEach(p=>p.draw());
 
-    drawEraserRing();
-    drawLockKeyField();
+    drawEraserRing(); drawLockKeyField();
 
-    // Update prev for next frame (only when not dragging to avoid carry-over)
-    if (!isMouseDown || activeTool !== 'drag') {
-        prevMX = lastMX; prevMY = lastMY;
-    }
+    if (!isMouseDown||activeTool!=='drag') { prevMX=lastMX; prevMY=lastMY; }
 
-    const locked = particles.filter(p=>p.locked).length;
-    particleCountEl.textContent =
-        `PARTÍCULAS: ${particles.length} · BLOQUEADAS: ${locked} · BOMBAS: ${bombs.length} · AG.NEGROS: ${blackHoles.length}`;
-    requestAnimationFrame(animate);
+    const locked=particles.filter(p=>p.locked).length;
+    const frozen=particles.filter(p=>p.frozen).length;
+    particleCountEl.textContent=`PARTÍCULAS: ${particles.length} · BLOQ: ${locked} · CONGELADAS: ${frozen} · PLANETAS: ${gravityWells.length} · PÚLSARES: ${pulsars.length}`;
 }
 
-// ── START ────────────────────────────────────────────────────────────
-startBtn.addEventListener('click', () => {
+// ── START ──────────────────────────────────────────────────────
+startBtn.addEventListener('click', ()=>{
     initAudio(); buildNebula();
     overlay.style.transition='opacity 0.8s'; overlay.style.opacity='0';
-    setTimeout(()=>overlay.remove(), 800);
+    setTimeout(()=>overlay.remove(),800);
     updateCursor();
     toolLabelEl.textContent='HERRAMIENTA: MANO';
     animate();
